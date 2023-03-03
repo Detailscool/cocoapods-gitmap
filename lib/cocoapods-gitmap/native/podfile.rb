@@ -9,21 +9,15 @@ module Pod
           requirements.each do |requirement|
             git_url = requirement[:git]
             if git_url
-              new_git_url = GitMap.get_git_url(name)
-              requirement[:git] = new_git_url || git_url
-
-              commit = requirement[:commit]
-              if new_git_url && commit
-                requirement[:commit] = GitMap.get_git_commit_from_default_branch(new_git_url) || commit
-              end
+              GitMap.config_options(name, requirement)
             end
           end
         end
         old_pod(name, *requirements)
       end
 
-      def set_repo(repo, default_branch=nil)
-        GitMap.set_repo(repo, default_branch=default_branch)
+      def set_repo(repo)
+        GitMap.set_repo(repo)
       end
     end
   end
