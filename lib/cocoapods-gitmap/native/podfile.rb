@@ -6,11 +6,8 @@ module Pod
       alias old_pod pod
       def pod(name = nil, *requirements)
         if plugins.keys.include?('cocoapods-gitmap')
-          requirements.each do |requirement|
-            git_url = requirement[:git]
-            if git_url
-              GitMap.config_options(name, requirement)
-            end
+          requirements = requirements.map do |requirement|
+            GitMap.config_options(name, requirement, self)
           end
         end
         old_pod(name, *requirements)

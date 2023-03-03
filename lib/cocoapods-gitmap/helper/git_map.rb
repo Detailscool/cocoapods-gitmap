@@ -15,10 +15,18 @@ module Pod
       name = name.include?('/') ? name.split('/').first : name
       return mapping && @@repo ? mapping[@@repo][name] : nil
     end
+    private_class_method :repo_cofig
 
-    def self.config_options(name, requirement)
+    def self.config_options(name, requirement, dsl)
       repo_cofig = self.repo_cofig name
       return unless repo_cofig
+
+      tag = repo_cofig[:tag]
+      if tag
+        source = repo_cofig[:source]
+        dsl.source source if source
+        return tag if requirement.kind_of?(String)
+      end
 
       git_url = repo_cofig[:git]
       requirement[:git] = git_url if git_url
@@ -26,11 +34,11 @@ module Pod
       commit = repo_cofig[:commit]
       if commit
         requirement[:commit] = commit
-        return
+        return requirement
       end
 
       branch = repo_cofig[:branch]
-      return unless branch
+      return requirement unless branch
 
       command = ['ls-remote',
                  '--',
@@ -42,6 +50,7 @@ module Pod
       match = %r{([a-z0-9]*)\trefs\/(heads|tags)\/#{Regexp.quote(encoded_branch_name)}}.match(output)
       match = match[1] unless match.nil?
       requirement[:commit] = match if match
+      requirement
     end
 
     def self.mapping
