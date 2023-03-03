@@ -25,7 +25,11 @@ module Pod
       if tag
         source = repo_cofig[:source]
         dsl.source source if source
-        return tag if requirement.kind_of?(String)
+        if requirement.kind_of?(String) || requirement.kind_of?(Hash)
+          return tag
+        else
+          return requirement
+        end
       end
 
       git_url = repo_cofig[:git]
