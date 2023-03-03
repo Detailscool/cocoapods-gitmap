@@ -3,7 +3,7 @@ module Pod
   class GitMap
     @@gitMap = {}
     @@hasGitMap = true
-    GitMapFile = '.GitMap.yml'
+    GitMapFile = 'GitMap.yml'
     @@repo = nil
 
     def self.set_repo(repo)
@@ -61,10 +61,10 @@ module Pod
       return @@gitMap unless @@gitMap.empty?
       return unless @@hasGitMap
 
-      root = Config.instance.installation_root
-      gitmap_file = root.join GitMapFile
-      if gitmap_file.exist?
-        @@gitMap = YAML.load(File.read(gitmap_file))
+      root = Config.instance.installation_root.realpath
+      gitmap_file = Dir.glob("#{root}/**/#{GitMapFile}")
+      if gitmap_file
+        @@gitMap = YAML.load(File.read(gitmap_file.first))
       else
         @@hasGitlabConfig = false
         UI.message "不存在#{GitMapFile}文件"
