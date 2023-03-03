@@ -1,1 +1,1 @@
-require 'cocoapods-gitmap/command'
+require 'cocoapods-gitmap/native/podfile'
